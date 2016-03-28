@@ -162,22 +162,4 @@ private:
 	};
 };
 
-template <typename T>
-inline auto *get(llvm::LLVMContext &C, T example)
-{
-	return TypeID<T>::get(C);
-}
-
-template <typename T>
-inline auto *getFunction(llvm::LLVMContext &C, T example)
-{
-	return TypeID<std::remove_pointer_t<T>>::get(C);
-}
-
-template <typename T>
-inline void annotateFunction(llvm::Function &F, T example)
-{
-	TypeID<std::remove_pointer_t<T>>::annotateFunction(F);
-}
-
 } // namespace LLVMTypeID

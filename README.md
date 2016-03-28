@@ -72,7 +72,7 @@ Isn't it beautiful?
 ### With LLVMTypeID
 
 ```c++
-FunctionType *func = LLVMTypeID::getFunction(C, foo);
+FunctionType *func = LLVMTypeID::TypeID<decltype(foo)>::get(C);
 ```
 
 LLVMTypeID automatically deduces the function type and builds the correct type
@@ -80,28 +80,18 @@ in IR. This does not even need foo to be defined.
 
 ## Usage
 
-If you have a variable `foo` that is of the type you want to replicate in IR
-with `LLVMContext &C`, you can use
+If you have a variable or function `foo` that is of the type you want to
+replicate in IR with `LLVMContext &C`, you can use
 
 ```c++
-LLVMTypeID::getFunction(C, foo);
+LLVMTypeID::TypeID<decltype(foo)>::get(C);
 ```
-
-for functions, and
-
-```c++
-LLVMTypeID::get(C, foo);
-```
-
-for everything else.
 
 If you have the type signature `sig`, you can use
 
 ```c++
 LLVMTypeID::TypeID<sig>::get(C);
 ```
-
-for both functions and other types.
 
 ### What constructs are supported?
 
@@ -115,7 +105,7 @@ Most of the time, LLVM realizes references as pointers. However, if a function
 parameter is a reference, an attribute is emitted to denote that the pointer
 is guaranteed to be valid: `dereferenceable`. This attribute is part of the
 function, not of the function type, which is why it cannot be emitted as part
-of `getFunction`, which will simply emit a reference argument as a pointer. In
+of `get`, which will simply emit a reference argument as a pointer. In
 order to make the function comply with what clang generates, `dereferenceable`
 attributes have to be added where necessary. There is a function which does
 that automatically.
@@ -124,7 +114,7 @@ If `F` is your function in IR and `foo` is the function declaration, then you
 can use:
 
 ```c++
-LLVMTypeID::annotateFunction(F, foo);
+LLVMTypeID::TypeID<decltype(foo)>::annotateFunction(F);
 ```
 
 If `F` is the IR function and `sig` is the function type signature, you can use:
