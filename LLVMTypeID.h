@@ -66,7 +66,7 @@ class TypeID
 public:
 	static auto *get(llvm::LLVMContext &C)
 	{
-		return TypeID<typename std::remove_cv<T>::type>::get(C);
+		return TypeID<typename std::remove_cv_t<T>>::get(C);
 	}
 };
 
