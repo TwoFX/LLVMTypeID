@@ -49,6 +49,16 @@ public:
 	}
 };
 
+template <typename T>
+class TypeID<T &>
+{
+public:
+	static auto *get(llvm::LLVMContext &C)
+	{
+		return TypeID<T *>::get(C);
+	}
+};
+
 template <typename T, std::uint64_t num>
 class TypeID<T[num]>
 {
@@ -87,6 +97,29 @@ public:
 		return llvm::FunctionType::get(TypeID<res>::get(C),
 			llvm::SmallVector<llvm::Type *, sizeof...(args)>
 			({ TypeID<args>::get(C)... }), false);
+	}
+
+	static void annotateFunction(llvm::Function &F)
+	{
+		annot<res, args...>(F, 0);
+	}
+
+private:
+	template <typename single>
+	static void annot(llvm::Function &F, std::uint32_t index)
+	{
+		if (std::is_lvalue_reference<single>::value)
+		{
+			F.addDereferenceableAttr(index, sizeof(single));
+		}
+	}
+
+	template <typename first, typename ...rest,
+		typename = std::enable_if_t<sizeof...(rest) != 0>>
+	static void annot(llvm::Function &F, std::uint32_t index)
+	{
+		annot<first>(F, index);
+		annot<rest...>(F, index + 1);
 	}
 };
 
