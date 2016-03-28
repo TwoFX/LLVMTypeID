@@ -15,7 +15,7 @@
 namespace LLVMTypeID
 {
 
-template <typename Type>
+template <typename Type, typename = void>
 class TypeID;
 
 #define TYPEID(type, cls, stmt) \
@@ -28,6 +28,8 @@ class TypeID;
 			return stmt; \
 		} \
 	};
+
+TYPEID(char, llvm::IntegerType, llvm::Type::getInt8Ty(C))
 
 TYPEID(std::int8_t, llvm::IntegerType, llvm::Type::getInt8Ty(C))
 TYPEID(std::int16_t, llvm::IntegerType, llvm::Type::getInt16Ty(C))
@@ -71,7 +73,8 @@ public:
 
 // Remove const and volatile (they are not reflected in IR)
 template <typename T>
-class TypeID
+class TypeID<T,
+	std::enable_if_t<!std::is_same<T, std::remove_cv_t<T>>::value>>
 {
 public:
 	static auto *get(llvm::LLVMContext &C)
