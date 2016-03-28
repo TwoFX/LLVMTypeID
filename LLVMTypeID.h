@@ -63,6 +63,16 @@ public:
 	}
 };
 
+template <typename T>
+class TypeID<T[]>
+{
+public:
+	static llvm::ArrayType *get(llvm::LLVMContext &C)
+	{
+		return llvm::ArrayType::get(TypeID<T>::get(C), 0);
+	}
+};
+
 template <typename T, std::uint64_t num>
 class TypeID<T[num]>
 {
@@ -127,5 +137,11 @@ private:
 		annot<rest...>(F, index + 1);
 	}
 };
+
+template <typename T>
+inline llvm::Type *get(llvm::LLVMContext &C, T example)
+{
+	return TypeID<T>::get(C);
+}
 
 } // namespace LLVMTypeID
