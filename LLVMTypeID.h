@@ -20,12 +20,12 @@ namespace LLVMTypeID
 template <typename Type, typename = void>
 class TypeID;
 
-#define TYPEID(type, stmt)                                                \
+#define TYPEID(type, stmt)                                                     \
 	template <>                                                                \
 	class TypeID<type>                                                         \
 	{                                                                          \
 	public:                                                                    \
-		static auto *get(llvm::LLVMContext &C)                                  \
+		static auto *get(llvm::LLVMContext &C)                                 \
 		{                                                                      \
 			return stmt;                                                       \
 		}                                                                      \
