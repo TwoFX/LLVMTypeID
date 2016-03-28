@@ -1,4 +1,4 @@
-	# LLVMTypeIDcumbetr
+# LLVMTypeID
 A convenient way of generating an `llvm::Type`
 
 When building an LLVM pass, you sometimes have to declare a type of the value or
