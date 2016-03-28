@@ -10,6 +10,7 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
 
+#include <climits>
 #include <cstdint>
 #include <type_traits>
 
@@ -30,7 +31,7 @@ class TypeID;
 		} \
 	};
 
-TYPEID(char, llvm::IntegerType, llvm::Type::getInt8Ty(C))
+TYPEID(char, llvm::IntegerType, llvm::IntegerType::get(C, CHAR_BIT))
 
 TYPEID(std::int8_t, llvm::IntegerType, llvm::Type::getInt8Ty(C))
 TYPEID(std::int16_t, llvm::IntegerType, llvm::Type::getInt16Ty(C))
