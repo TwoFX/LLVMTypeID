@@ -128,11 +128,11 @@ public:
 	}
 
 private:
-	template <typename first, typename... rest>
+	template <typename... Ts>
 	class Annotator;
 
 	template <typename single>
-	class Annotator<single &, void>
+	class Annotator<single &>
 	{
 	public:
 		static void annotate(llvm::Function &F, std::uint32_t index)
@@ -142,7 +142,7 @@ private:
 	};
 
 	template <typename single>
-	class Annotator<single, void>
+	class Annotator<single>
 	{
 	public:
 		static void annotate(llvm::Function &F, std::uint32_t index)
@@ -151,13 +151,13 @@ private:
 	};
 
 	template <typename first, typename... rest>
-	class Annotator
+	class Annotator<first, rest...>
 	{
 	public:
 		static void annotate(llvm::Function &F, std::uint32_t index)
 		{
-			Annotator<first, void>::annotate(F, index);
-			Annotator<rest..., void>::annotate(F, index + 1);
+			Annotator<first>::annotate(F, index);
+			Annotator<rest...>::annotate(F, index + 1);
 		}
 	};
 };
@@ -166,6 +166,18 @@ template <typename T>
 inline llvm::Type *get(llvm::LLVMContext &C, T example)
 {
 	return TypeID<T>::get(C);
+}
+
+template <typename T>
+inline llvm::FunctionType *getFunction(llvm::LLVMContext &C, T example)
+{
+	return llvm::cast<llvm::FunctionType>(TypeID<std::remove_pointer_t<T>>::get(C));
+}
+
+template <typename T>
+inline void annotateFunction(llvm::Function &F, T example)
+{
+	TypeID<std::remove_pointer_t<T>>::annotateFunction(F);
 }
 
 } // namespace LLVMTypeID
