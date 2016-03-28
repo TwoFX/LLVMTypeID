@@ -145,12 +145,12 @@ a reference. Each specialization looks roughly like this (for example for type
 template <>
 class LLVMTypeID::TypeID<foo>
 {
-public
+public:
 	static Type *get(LLVMContext &C)
 	{
 		return /* Somehow get the types */;
 	}
-}
+};
 ```
 
 In order to be compatible and callable from the other specializations, `get`,
