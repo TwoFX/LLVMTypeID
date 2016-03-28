@@ -179,7 +179,7 @@ public:
 	{
 		return LLVMTypeID::Struct<int, int, int, int, int>("A", C);
 	}
-}
+};
 ```
 
 `LLVMTypeID::Struct<>()` takes the types of the data members of the struct as
