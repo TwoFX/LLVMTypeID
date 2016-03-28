@@ -31,7 +31,8 @@ class TypeID;
 		} \
 	};
 
-TYPEID(char, llvm::IntegerType, llvm::IntegerType::get(C, CHAR_BIT))
+TYPEID(bool, llvm::IntegerType, llvm::Type::getInt1Ty(C))
+TYPEID(char, llvm::IntegerType, llvm::Type::getIntNTy(C, CHAR_BIT))
 
 TYPEID(std::int8_t, llvm::IntegerType, llvm::Type::getInt8Ty(C))
 TYPEID(std::int16_t, llvm::IntegerType, llvm::Type::getInt16Ty(C))
@@ -42,6 +43,11 @@ TYPEID(std::uint8_t, llvm::IntegerType, llvm::Type::getInt8Ty(C))
 TYPEID(std::uint16_t, llvm::IntegerType, llvm::Type::getInt16Ty(C))
 TYPEID(std::uint32_t, llvm::IntegerType, llvm::Type::getInt32Ty(C))
 TYPEID(std::uint64_t, llvm::IntegerType, llvm::Type::getInt64Ty(C))
+
+TYPEID(void, llvm::Type, llvm::Type::getVoidTy(C))
+
+TYPEID(float, llvm::Type, llvm::Type::getFloatTy(C))
+TYPEID(double, llvm::Type, llvm::Type::getDoubleTy(C))
 
 template <typename T>
 class TypeID<T *>
