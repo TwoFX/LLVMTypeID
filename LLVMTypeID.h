@@ -11,6 +11,7 @@
 #include <llvm/IR/DerivedTypes.h>
 
 #include <cstdint>
+#include <type_traits>
 
 namespace LLVMTypeID
 {
