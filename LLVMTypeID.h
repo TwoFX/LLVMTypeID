@@ -124,26 +124,42 @@ public:
 
 	static void annotateFunction(llvm::Function &F)
 	{
-		annot<res, args...>(F, 0);
+		Annotator<res, args...>::annotate(F, 0);
 	}
 
 private:
+	template <typename first, typename... rest>
+	class Annotator;
+
 	template <typename single>
-	static void annot(llvm::Function &F, std::uint32_t index)
+	class Annotator<single &, void>
 	{
-		if (std::is_lvalue_reference<single>::value)
+	public:
+		static void annotate(llvm::Function &F, std::uint32_t index)
 		{
 			F.addDereferenceableAttr(index, sizeof(single));
 		}
-	}
+	};
 
-	template <typename first, typename... rest,
-			  typename = std::enable_if_t<sizeof...(rest) != 0>>
-	static void annot(llvm::Function &F, std::uint32_t index)
+	template <typename single>
+	class Annotator<single, void>
 	{
-		annot<first>(F, index);
-		annot<rest...>(F, index + 1);
-	}
+	public:
+		static void annotate(llvm::Function &F, std::uint32_t index)
+		{
+		}
+	};
+
+	template <typename first, typename... rest>
+	class Annotator
+	{
+	public:
+		static void annotate(llvm::Function &F, std::uint32_t index)
+		{
+			Annotator<first, void>::annotate(F, index);
+			Annotator<rest..., void>::annotate(F, index + 1);
+		}
+	};
 };
 
 template <typename T>
