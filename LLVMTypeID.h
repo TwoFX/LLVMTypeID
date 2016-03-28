@@ -7,8 +7,8 @@
 #pragma once
 
 #include <llvm/ADT/SmallVector.h>
-#include <llvm/IR/Type.h>
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Type.h>
 
 #include <climits>
 #include <cstdint>
@@ -20,15 +20,15 @@ namespace LLVMTypeID
 template <typename Type, typename = void>
 class TypeID;
 
-#define TYPEID(type, cls, stmt) \
-	template <> \
-	class TypeID<type> \
-	{ \
-	public: \
-		static cls *get(llvm::LLVMContext &C) \
-		{ \
-			return stmt; \
-		} \
+#define TYPEID(type, cls, stmt)                                                \
+	template <>                                                                \
+	class TypeID<type>                                                         \
+	{                                                                          \
+	public:                                                                    \
+		static cls *get(llvm::LLVMContext &C)                                  \
+		{                                                                      \
+			return stmt;                                                       \
+		}                                                                      \
 	};
 
 TYPEID(bool, llvm::IntegerType, llvm::Type::getInt1Ty(C))
@@ -91,8 +91,7 @@ public:
 
 // Remove const and volatile (they are not reflected in IR)
 template <typename T>
-class TypeID<T,
-	std::enable_if_t<!std::is_same<T, std::remove_cv_t<T>>::value>>
+class TypeID<T, std::enable_if_t<!std::is_same<T, std::remove_cv_t<T>>::value>>
 {
 public:
 	static auto *get(llvm::LLVMContext &C)
@@ -101,23 +100,26 @@ public:
 	}
 };
 
-template <typename ...args>
+template <typename... args>
 inline llvm::StructType *Struct(llvm::StringRef name, llvm::LLVMContext &C)
 {
-	return llvm::StructType::create(C,
-		llvm::SmallVector<llvm::Type *, sizeof...(args)>
-		({ TypeID<args>::get(C)... }), name);
+	return llvm::StructType::create(
+		C, llvm::SmallVector<llvm::Type *, sizeof...(args)>(
+			   {TypeID<args>::get(C)...}),
+		name);
 }
 
-template <typename res, typename ...args>
+template <typename res, typename... args>
 class TypeID<res(args...)>
 {
 public:
 	static llvm::FunctionType *get(llvm::LLVMContext &C)
 	{
-		return llvm::FunctionType::get(TypeID<res>::get(C),
-			llvm::SmallVector<llvm::Type *, sizeof...(args)>
-			({ TypeID<args>::get(C)... }), false);
+		return llvm::FunctionType::get(
+			TypeID<res>::get(C),
+			llvm::SmallVector<llvm::Type *, sizeof...(args)>(
+				{TypeID<args>::get(C)...}),
+			false);
 	}
 
 	static void annotateFunction(llvm::Function &F)
@@ -135,8 +137,8 @@ private:
 		}
 	}
 
-	template <typename first, typename ...rest,
-		typename = std::enable_if_t<sizeof...(rest) != 0>>
+	template <typename first, typename... rest,
+			  typename = std::enable_if_t<sizeof...(rest) != 0>>
 	static void annot(llvm::Function &F, std::uint32_t index)
 	{
 		annot<first>(F, index);
