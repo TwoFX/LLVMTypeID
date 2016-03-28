@@ -47,7 +47,8 @@ Now how do we get the correct function type for `foo`?
 After looking up at [cdecl](http://cdecl.org/) that the second parameter of
 the function means
 > declare baz as array of array 8 of pointer to pointer to function returning
-> pointer to array of pointer to char
+> pointer to array of pointer to char,
+
 we can set out to construct the function type by hand.
 
 
