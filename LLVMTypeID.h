@@ -20,40 +20,40 @@ namespace LLVMTypeID
 template <typename Type, typename = void>
 class TypeID;
 
-#define TYPEID(type, cls, stmt)                                                \
+#define TYPEID(type, stmt)                                                \
 	template <>                                                                \
 	class TypeID<type>                                                         \
 	{                                                                          \
 	public:                                                                    \
-		static cls *get(llvm::LLVMContext &C)                                  \
+		static auto *get(llvm::LLVMContext &C)                                  \
 		{                                                                      \
 			return stmt;                                                       \
 		}                                                                      \
 	};
 
-TYPEID(bool, llvm::IntegerType, llvm::Type::getInt1Ty(C))
-TYPEID(char, llvm::IntegerType, llvm::Type::getIntNTy(C, CHAR_BIT))
+TYPEID(bool, llvm::Type::getInt1Ty(C))
+TYPEID(char, llvm::Type::getIntNTy(C, CHAR_BIT))
 
-TYPEID(std::int8_t, llvm::IntegerType, llvm::Type::getInt8Ty(C))
-TYPEID(std::int16_t, llvm::IntegerType, llvm::Type::getInt16Ty(C))
-TYPEID(std::int32_t, llvm::IntegerType, llvm::Type::getInt32Ty(C))
-TYPEID(std::int64_t, llvm::IntegerType, llvm::Type::getInt64Ty(C))
+TYPEID(std::int8_t, llvm::Type::getInt8Ty(C))
+TYPEID(std::int16_t, llvm::Type::getInt16Ty(C))
+TYPEID(std::int32_t, llvm::Type::getInt32Ty(C))
+TYPEID(std::int64_t, llvm::Type::getInt64Ty(C))
 
-TYPEID(std::uint8_t, llvm::IntegerType, llvm::Type::getInt8Ty(C))
-TYPEID(std::uint16_t, llvm::IntegerType, llvm::Type::getInt16Ty(C))
-TYPEID(std::uint32_t, llvm::IntegerType, llvm::Type::getInt32Ty(C))
-TYPEID(std::uint64_t, llvm::IntegerType, llvm::Type::getInt64Ty(C))
+TYPEID(std::uint8_t, llvm::Type::getInt8Ty(C))
+TYPEID(std::uint16_t, llvm::Type::getInt16Ty(C))
+TYPEID(std::uint32_t, llvm::Type::getInt32Ty(C))
+TYPEID(std::uint64_t, llvm::Type::getInt64Ty(C))
 
-TYPEID(void, llvm::Type, llvm::Type::getVoidTy(C))
+TYPEID(void, llvm::Type::getVoidTy(C))
 
-TYPEID(float, llvm::Type, llvm::Type::getFloatTy(C))
-TYPEID(double, llvm::Type, llvm::Type::getDoubleTy(C))
+TYPEID(float, llvm::Type::getFloatTy(C))
+TYPEID(double, llvm::Type::getDoubleTy(C))
 
 template <typename T>
 class TypeID<T *>
 {
 public:
-	static llvm::PointerType *get(llvm::LLVMContext &C)
+	static auto *get(llvm::LLVMContext &C)
 	{
 		return llvm::PointerType::getUnqual(TypeID<T>::get(C));
 	}
@@ -73,7 +73,7 @@ template <typename T>
 class TypeID<T[]>
 {
 public:
-	static llvm::ArrayType *get(llvm::LLVMContext &C)
+	static auto *get(llvm::LLVMContext &C)
 	{
 		return llvm::ArrayType::get(TypeID<T>::get(C), 0);
 	}
@@ -83,7 +83,7 @@ template <typename T, std::uint64_t num>
 class TypeID<T[num]>
 {
 public:
-	static llvm::ArrayType *get(llvm::LLVMContext &C)
+	static auto *get(llvm::LLVMContext &C)
 	{
 		return llvm::ArrayType::get(TypeID<T>::get(C), num);
 	}
@@ -101,7 +101,7 @@ public:
 };
 
 template <typename... args>
-inline llvm::StructType *Struct(llvm::StringRef name, llvm::LLVMContext &C)
+inline auto *Struct(llvm::StringRef name, llvm::LLVMContext &C)
 {
 	return llvm::StructType::create(
 		C, llvm::SmallVector<llvm::Type *, sizeof...(args)>(
@@ -113,7 +113,7 @@ template <typename res, typename... args>
 class TypeID<res(args...)>
 {
 public:
-	static llvm::FunctionType *get(llvm::LLVMContext &C)
+	static auto *get(llvm::LLVMContext &C)
 	{
 		return llvm::FunctionType::get(
 			TypeID<res>::get(C),
@@ -163,16 +163,15 @@ private:
 };
 
 template <typename T>
-inline llvm::Type *get(llvm::LLVMContext &C, T example)
+inline auto *get(llvm::LLVMContext &C, T example)
 {
 	return TypeID<T>::get(C);
 }
 
 template <typename T>
-inline llvm::FunctionType *getFunction(llvm::LLVMContext &C, T example)
+inline auto *getFunction(llvm::LLVMContext &C, T example)
 {
-	return llvm::cast<llvm::FunctionType>(
-		TypeID<std::remove_pointer_t<T>>::get(C));
+	return TypeID<std::remove_pointer_t<T>>::get(C);
 }
 
 template <typename T>

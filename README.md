@@ -146,7 +146,7 @@ template <>
 class LLVMTypeID::TypeID<foo>
 {
 public:
-	static Type *get(LLVMContext &C)
+	static auto *get(LLVMContext &C)
 	{
 		return /* Somehow get the types */;
 	}
@@ -154,8 +154,9 @@ public:
 ```
 
 In order to be compatible and callable from the other specializations, `get`,
-has to have exactly one parameter, a reference to an LLVMContext. If you can,
-try to emit subclasses of `llvm::Type`, as this aids in overload resolution.
+has to have exactly one parameter, a reference to an LLVMContext. Use `auto *`
+as return type to guarantee that the most specific type that can be deduced is
+returned.
 
 ### Structured data
 
@@ -175,7 +176,7 @@ template <>
 class LLVMTypeID::TypeID<A>
 {
 public:
-	static StructType *get(LLVMContext &C)
+	static auto *get(LLVMContext &C)
 	{
 		return LLVMTypeID::Struct<int, int, int, int, int>("A", C);
 	}
