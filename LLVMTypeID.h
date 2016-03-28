@@ -171,7 +171,8 @@ inline llvm::Type *get(llvm::LLVMContext &C, T example)
 template <typename T>
 inline llvm::FunctionType *getFunction(llvm::LLVMContext &C, T example)
 {
-	return llvm::cast<llvm::FunctionType>(TypeID<std::remove_pointer_t<T>>::get(C));
+	return llvm::cast<llvm::FunctionType>(
+		TypeID<std::remove_pointer_t<T>>::get(C));
 }
 
 template <typename T>
