@@ -1,5 +1,19 @@
+**Note:** It turns out I ended up reimplementing the whole of `llvm::TypeBuilder`
+without knowning it existed. Interestingly enough, my design and implementation
+is alomost exactly identical to TypeBuilder, even though I did not know it
+existed at all until I was already done with this project. All in all, writing
+this was a very nice learning experience regarding working with templates.
+
+There is one area where I think this implementation is subjectively superior:
+function types. I am trying to upstream my implementation using variadic
+templates over at [D18544](http://reviews.llvm.org/D18544).
+
+**Unless you need function types with more than 5 parameters and my patch has
+not been accepted (yet), I recommend using llvm::TypeBuilder rather than this
+project.**
+
 # LLVMTypeID
-A convenient way of generating an `llvm::Type`
+A convenient way of generating an `llvm::Type`.
 
 When building an LLVM pass, you sometimes have to declare a type of the value or
 function in the IR you are operating on. This is done using `llvm::Type`, but
