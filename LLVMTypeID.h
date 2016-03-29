@@ -114,9 +114,8 @@ class TypeID<res(args...)>
 public:
 	static auto *get(llvm::LLVMContext &C)
 	{
-		return llvm::FunctionType::get(
-			TypeID<res>::get(C), { TypeID<args>::get(C)... },
-			false);
+		return llvm::FunctionType::get(TypeID<res>::get(C),
+									   {TypeID<args>::get(C)...}, false);
 	}
 
 	static void annotateFunction(llvm::Function &F)
@@ -166,7 +165,7 @@ public:
 	static auto *get(llvm::LLVMContext &C)
 	{
 		return llvm::FunctionType::get(TypeID<res>::get(C),
-		{ TypeID<args>::get(C)...}, true);
+									   {TypeID<args>::get(C)...}, true);
 	}
 
 	static void annotateFunction(llvm::Function &F)
