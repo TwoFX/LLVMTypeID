@@ -9,7 +9,6 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Type.h>
 
-#include <array>
 #include <climits>
 #include <cstdint>
 #include <type_traits>
@@ -110,17 +109,6 @@ inline auto *Struct(llvm::StringRef name, llvm::LLVMContext &C)
 }
 
 template <typename res, typename... args>
-class TypeID<res(args..., ...)>
-{
-public:
-	static auto *get(llvm::LLVMContext &C)
-	{
-		return llvm::FunctionType::get(TypeID<res>::get(C),
-			llvm::SmallVector<llvm::Type *, sizeof...(args)>({ TypeID<args>::get(C)...}), true);
-	}
-};
-
-template <typename res, typename... args>
 class TypeID<res(args...)>
 {
 public:
@@ -169,6 +157,22 @@ private:
 			Annotator<rest...>::annotate(F, index + 1);
 		}
 	};
+};
+
+template <typename res, typename... args>
+class TypeID<res(args..., ...)>
+{
+public:
+	static auto *get(llvm::LLVMContext &C)
+	{
+		return llvm::FunctionType::get(TypeID<res>::get(C),
+		{ TypeID<args>::get(C)...}, true);
+	}
+
+	static void annotateFunction(llvm::Function &F)
+	{
+		TypeID<res(args...)>::annotateFunction(F);
+	}
 };
 
 } // namespace LLVMTypeID
